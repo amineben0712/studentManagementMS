@@ -16,7 +16,7 @@ jobs:
 
       # Naviguer vers le répertoire contenant le fichier pom.xml si nécessaire
       - name: Navigate to project directory
-        run: cd path/to/project # Remplacez ce chemin par le chemin réel où se trouve pom.xml (si nécessaire)
+        run: cd studentManagementMS # Remplacez ce chemin par le chemin réel où se trouve pom.xml (si nécessaire)
 
       # Configurer Java (version 11 ici)
       - name: Set up Java version
