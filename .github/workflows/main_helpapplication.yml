@@ -12,6 +12,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Cloner tout le dépôt
 
       - name: Set up Java version
         uses: actions/setup-java@v4
@@ -20,18 +22,18 @@ jobs:
           distribution: 'microsoft'
 
       - name: Debug - List directory
-        run: ls -R
+        run: ls -R # Lister tous les fichiers pour vérifier la structure du projet
 
       - name: Build with Maven
         run: |
-          cd  ~/Bureau/Serv-archi-main/Microservice-SpringBoot/Help # Remplacez "app" par le dossier contenant le fichier pom.xml si nécessaire
+          cd Microservice-SpringBoot/Help # Remplacez ce chemin par celui contenant pom.xml
           mvn clean install
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: java-app
-          path: app/target/*.jar # Mettez à jour le chemin si nécessaire
+          path: Microservice-SpringBoot/Help/target/*.jar # Mettez à jour le chemin si nécessaire
 
   deploy:
     runs-on: ubuntu-latest
@@ -40,7 +42,7 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write #This is required for requesting the JWT
+      id-token: write # Nécessaire pour le token JWT
   
     steps:
       - name: Download artifact from build job
@@ -61,4 +63,4 @@ jobs:
         with:
           app-name: 'HelpApplication'
           slot-name: 'Production'
-          package: '*.jar'
+          package: java-app/*.jar
