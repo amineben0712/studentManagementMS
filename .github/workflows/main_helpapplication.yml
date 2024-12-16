@@ -24,7 +24,7 @@ jobs:
 
       - name: Build with Maven
         run: |
-          cd  studentManagementMS # Remplacez "app" par le dossier contenant le fichier pom.xml si nécessaire
+          cd  /Bureau/Serv-archi-main/Microservice-SpringBoot/Help # Remplacez "app" par le dossier contenant le fichier pom.xml si nécessaire
           mvn clean install
 
       - name: Upload artifact for deployment job
