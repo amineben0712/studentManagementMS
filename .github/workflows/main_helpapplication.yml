@@ -1,6 +1,3 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
 name: Build and deploy JAR app to Azure Web App - HelpApplication
 
 on:
@@ -22,14 +19,19 @@ jobs:
           java-version: '11'
           distribution: 'microsoft'
 
+      - name: Debug - List directory
+        run: ls -R
+
       - name: Build with Maven
-        run: mvn clean install
+        run: |
+          cd app # Remplacez "app" par le dossier contenant le fichier pom.xml si nécessaire
+          mvn clean install
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: java-app
-          path: '${{ github.workspace }}/target/*.jar'
+          path: app/target/*.jar # Mettez à jour le chemin si nécessaire
 
   deploy:
     runs-on: ubuntu-latest
@@ -49,9 +51,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_DC280B2DB7E8412D8DD40DF4921DF940 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_5771AD1155754FD0ACBAF0B68EAE1D3C }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_B0E6F529D8F54B958ACB14DBAA59C862 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -60,4 +62,3 @@ jobs:
           app-name: 'HelpApplication'
           slot-name: 'Production'
           package: '*.jar'
-          
