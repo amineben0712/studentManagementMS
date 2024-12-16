@@ -24,7 +24,7 @@ jobs:
 
       - name: Build with Maven
         run: |
-          cd app # Remplacez "app" par le dossier contenant le fichier pom.xml si nécessaire
+          cd  studentManagementMS # Remplacez "app" par le dossier contenant le fichier pom.xml si nécessaire
           mvn clean install
 
       - name: Upload artifact for deployment job
