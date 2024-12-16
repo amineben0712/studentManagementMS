@@ -11,29 +11,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Vérifier et récupérer le code source depuis le dépôt GitHub
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Cloner tout le dépôt
 
+      # Naviguer vers le répertoire contenant le fichier pom.xml si nécessaire
+      - name: Navigate to project directory
+        run: cd path/to/project # Remplacez ce chemin par le chemin réel où se trouve pom.xml (si nécessaire)
+
+      # Configurer Java (version 11 ici)
       - name: Set up Java version
         uses: actions/setup-java@v4
         with:
           java-version: '11'
           distribution: 'microsoft'
 
-      - name: Debug - List directory
-        run: ls -R # Lister tous les fichiers pour vérifier la structure du projet
-
+      # Exécuter Maven pour nettoyer et construire le projet
       - name: Build with Maven
-        run: |
-          cd Microservice-SpringBoot/Help # Remplacez ce chemin par celui contenant pom.xml
-          mvn clean install
+        run: mvn clean install # Maven sera exécuté dans le répertoire où pom.xml se trouve
 
+      # Lister les fichiers dans le répertoire target pour vérifier la création du fichier JAR
+      - name: List files in target directory
+        run: ls -l target
+
+      # Charger l'artefact (fichier JAR) pour le job de déploiement
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: java-app
-          path: Microservice-SpringBoot/Help/target/*.jar # Mettez à jour le chemin si nécessaire
+          path: target/*.jar
 
   deploy:
     runs-on: ubuntu-latest
@@ -42,25 +47,28 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write # Nécessaire pour le token JWT
+      id-token: write # Cette permission est nécessaire pour la demande du JWT
   
     steps:
+      # Télécharger l'artefact du job de construction
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: java-app
       
+      # Se connecter à Azure
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_DC280B2DB7E8412D8DD40DF4921DF940 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_5771AD1155754FD0ACBAF0B68EAE1D3C }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_B0E6F529D8F54B958ACB14DBAA59C862 }}
 
+      # Déployer l'application sur Azure Web App
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'HelpApplication'
           slot-name: 'Production'
-          package: java-app/*.jar
+          package: '*.jar'
